@@ -1,0 +1,12 @@
+---
+title: "Linear Regression"
+output: html_notebook
+
+```{r}
+setwd("/Users/timhan/Desktop/Rice/sp22/Datathon/RiceDatathon2022BeginnerTrack")
+data = read.csv(file = 'train.csv')
+fit = lm(interest_rate ~ . , data=data)
+summary(fit)
+summary(fit)$r.squared
+```
+
