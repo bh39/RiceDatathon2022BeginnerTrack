@@ -378,122 +378,255 @@ summary {
 <hr />
 <p>title: “Linear Regression” output: html_notebook</p>
 <pre class="r"><code>setwd(&quot;/Users/timhan/Desktop/Rice/sp22/Datathon/RiceDatathon2022BeginnerTrack&quot;)
-data = read.csv(file = &#39;train.csv&#39;)
-fit = lm(interest_rate ~ . , data=data)
+data = read.csv(file = &#39;cleaned.csv&#39;)
+x = data[, -which(names(data) == &quot;interest_rate&quot;)]
+y = data[&#39;interest_rate&#39;]
+idx &lt;- sample(seq(1, 3), size = nrow(data), replace = TRUE,prob = c(.8, .1, .1))
+train &lt;- data[idx == 1,]
+val_x &lt;- x[idx == 2,]
+val_y &lt;- y[idx == 2,]
+test_x &lt;- x[idx == 3,]
+test_y &lt;- y[idx == 3,]
+
+fit = lm(interest_rate ~ . , data=train)
 summary(fit)</code></pre>
 <pre><code>## 
 ## Call:
-## lm(formula = interest_rate ~ ., data = data)
+## lm(formula = interest_rate ~ ., data = train)
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -6.6175 -0.3925 -0.0500  0.3193  9.9976 
+## -6.5700 -0.3924 -0.0511  0.3194  9.9774 
 ## 
-## Coefficients: (8 not defined because of singularities)
-##                                                         Estimate Std. Error
-## (Intercept)                                            1.047e+04  8.821e+02
-## year                                                  -2.512e-02  1.465e-02
-## census_tract                                          -2.156e-07  1.830e-08
-## debt_to_income_ratio                                   2.523e-02  1.416e-03
-## tract_one_to_four_family_homes                         8.171e-06  5.919e-06
-## tract_median_age_of_hu                                 7.415e-04  1.852e-04
-## tract_minority_pop_percent                             8.943e-04  1.477e-04
-## tract_population                                      -1.362e-06  1.879e-06
-## tract_to_msa_income_percentage                        -4.689e-04  6.283e-05
-## ffiec_msa_md_median_fam_income                        -3.259e-04  6.502e-06
-## business_or_commercial_purpose                         8.582e-02  2.038e-02
-## combined_loan_to_value_ratio                           6.984e-03  1.967e-04
-## discount_points                                       -3.548e-05  1.438e-06
-## loan_amount                                           -3.999e-07  1.563e-08
-## total_units                                            8.763e-03  2.051e-02
-## X2.or.more.minority.races                              1.520e-02  4.227e-02
-## American.Indian.or.Alaska.Native                      -4.926e-02  2.497e-02
-## Asian                                                 -1.650e-01  7.495e-03
-## Black.or.African.American                              1.541e-02  6.875e-03
-## Free.Form.Text.Only                                    1.756e-01  1.512e-01
-## Joint                                                 -4.269e-02  1.333e-02
-## Native.Hawaiian.or.Other.Pacific.Islander             -3.131e-02  4.813e-02
-## White                                                         NA         NA
-## Affiliate.institution                                 -4.735e-01  2.983e-02
-## Commercial.bank..savings.bank..or.savings.association -5.720e-01  2.756e-02
-## Credit.union..mortgage.company..or.finance.company    -4.677e-01  2.752e-02
-## Fannie.Mae                                            -6.485e-01  2.730e-02
-## Farmer.Mac                                                    NA         NA
-## Freddie.Mac                                           -6.478e-01  2.742e-02
-## Ginnie.Mae                                            -6.537e-01  2.790e-02
-## Life.insurance.company                                -3.877e-01  3.841e-02
-## No.purchaser                                          -5.337e-01  2.719e-02
-## Other.type.of.purchaser                               -3.941e-01  2.821e-02
-## Private.securitizer                                           NA         NA
-## C                                                     -7.216e-03  1.382e-02
-## NC                                                            NA         NA
-## Manufactured                                           1.384e+00  5.921e-02
-## Site.built                                                    NA         NA
-## Conventional                                           2.778e-01  1.138e-02
-## FHA                                                    2.644e-01  1.002e-02
-## RHS.FSA                                                1.308e-01  6.513e-02
-## VA                                                            NA         NA
-## First.Lien                                            -1.278e+00  1.836e-02
-## Subordinate.Lien                                              NA         NA
-## Investment.property                                    4.924e-01  2.391e-02
-## Principal.residence                                   -1.486e-01  2.020e-02
-## Second.residence                                              NA         NA
-##                                                       t value Pr(&gt;|t|)    
-## (Intercept)                                            11.873  &lt; 2e-16 ***
-## year                                                   -1.715  0.08642 .  
-## census_tract                                          -11.782  &lt; 2e-16 ***
-## debt_to_income_ratio                                   17.819  &lt; 2e-16 ***
-## tract_one_to_four_family_homes                          1.380  0.16744    
-## tract_median_age_of_hu                                  4.004 6.24e-05 ***
-## tract_minority_pop_percent                              6.053 1.43e-09 ***
-## tract_population                                       -0.725  0.46853    
-## tract_to_msa_income_percentage                         -7.462 8.57e-14 ***
-## ffiec_msa_md_median_fam_income                        -50.115  &lt; 2e-16 ***
-## business_or_commercial_purpose                          4.212 2.54e-05 ***
-## combined_loan_to_value_ratio                           35.514  &lt; 2e-16 ***
-## discount_points                                       -24.671  &lt; 2e-16 ***
-## loan_amount                                           -25.585  &lt; 2e-16 ***
-## total_units                                             0.427  0.66920    
-## X2.or.more.minority.races                               0.360  0.71920    
-## American.Indian.or.Alaska.Native                       -1.973  0.04855 *  
-## Asian                                                 -22.011  &lt; 2e-16 ***
-## Black.or.African.American                               2.241  0.02501 *  
-## Free.Form.Text.Only                                     1.161  0.24546    
-## Joint                                                  -3.202  0.00136 ** 
-## Native.Hawaiian.or.Other.Pacific.Islander              -0.651  0.51530    
-## White                                                      NA       NA    
-## Affiliate.institution                                 -15.874  &lt; 2e-16 ***
-## Commercial.bank..savings.bank..or.savings.association -20.754  &lt; 2e-16 ***
-## Credit.union..mortgage.company..or.finance.company    -16.995  &lt; 2e-16 ***
-## Fannie.Mae                                            -23.751  &lt; 2e-16 ***
-## Farmer.Mac                                                 NA       NA    
-## Freddie.Mac                                           -23.626  &lt; 2e-16 ***
-## Ginnie.Mae                                            -23.434  &lt; 2e-16 ***
-## Life.insurance.company                                -10.093  &lt; 2e-16 ***
-## No.purchaser                                          -19.627  &lt; 2e-16 ***
-## Other.type.of.purchaser                               -13.968  &lt; 2e-16 ***
-## Private.securitizer                                        NA       NA    
-## C                                                      -0.522  0.60148    
-## NC                                                         NA       NA    
-## Manufactured                                           23.379  &lt; 2e-16 ***
-## Site.built                                                 NA       NA    
-## Conventional                                           24.423  &lt; 2e-16 ***
-## FHA                                                    26.374  &lt; 2e-16 ***
-## RHS.FSA                                                 2.008  0.04467 *  
-## VA                                                         NA       NA    
-## First.Lien                                            -69.595  &lt; 2e-16 ***
-## Subordinate.Lien                                           NA       NA    
-## Investment.property                                    20.597  &lt; 2e-16 ***
-## Principal.residence                                    -7.355 1.92e-13 ***
-## Second.residence                                           NA       NA    
+## Coefficients:
+##                                                                       Estimate
+## (Intercept)                                                          1.047e+04
+## year                                                                -2.185e-02
+## census_tract                                                        -2.158e-07
+## raceAmerican Indian or Alaska Native                                -6.880e-02
+## raceAsian                                                           -1.835e-01
+## raceBlack or African American                                       -2.286e-03
+## raceFree Form Text Only                                              2.308e-01
+## raceJoint                                                           -6.372e-02
+## raceNative Hawaiian or Other Pacific Islander                       -2.368e-02
+## raceWhite                                                           -1.410e-02
+## income                                                               6.202e-06
+## debt_to_income_ratio                                                 2.545e-02
+## tract_one_to_four_family_homes                                       1.700e-05
+## tract_median_age_of_hu                                               5.337e-04
+## tract_minority_pop_percent                                           9.140e-04
+## tract_population                                                    -3.457e-06
+## tract_to_msa_income_percentage                                      -5.576e-04
+## purchaser_typeCommercial bank, savings bank, or savings association -9.278e-02
+## purchaser_typeCredit union, mortgage company, or finance company     4.341e-03
+## purchaser_typeFannie Mae                                            -1.788e-01
+## purchaser_typeFarmer Mac                                             1.746e-01
+## purchaser_typeFreddie Mac                                           -1.713e-01
+## purchaser_typeGinnie Mae                                            -1.822e-01
+## purchaser_typeLife insurance company                                 6.867e-02
+## purchaser_typeNo purchaser                                          -5.247e-02
+## purchaser_typeOther type of purchaser                                6.817e-02
+## purchaser_typePrivate securitizer                                    4.874e-01
+## ffiec_msa_md_median_fam_income                                      -3.269e-04
+## business_or_commercial_purpose                                       7.613e-02
+## combined_loan_to_value_ratio                                         7.777e-03
+## conforming_loan_limitNC                                              8.779e-03
+## construction_methodSite-built                                       -1.372e+00
+## discount_points                                                     -3.819e-05
+## loan_amount                                                         -6.193e-07
+## loan_typeFHA                                                        -1.335e-02
+## loan_typeRHS/FSA                                                    -1.566e-01
+## loan_typeVA                                                         -2.707e-01
+## lien_statusSubordinate Lien                                          1.199e+00
+## occupancy_typePrincipal residence                                   -6.620e-01
+## occupancy_typeSecond residence                                      -5.008e-01
+## property_value                                                       1.759e-07
+## total_units                                                          3.154e-02
+##                                                                     Std. Error
+## (Intercept)                                                          8.856e+02
+## year                                                                 1.474e-02
+## census_tract                                                         1.837e-08
+## raceAmerican Indian or Alaska Native                                 5.044e-02
+## raceAsian                                                            4.450e-02
+## raceBlack or African American                                        4.436e-02
+## raceFree Form Text Only                                              1.538e-01
+## raceJoint                                                            4.585e-02
+## raceNative Hawaiian or Other Pacific Islander                        6.509e-02
+## raceWhite                                                            4.401e-02
+## income                                                               4.746e-06
+## debt_to_income_ratio                                                 1.425e-03
+## tract_one_to_four_family_homes                                       5.979e-06
+## tract_median_age_of_hu                                               1.865e-04
+## tract_minority_pop_percent                                           1.485e-04
+## tract_population                                                     1.896e-06
+## tract_to_msa_income_percentage                                       6.347e-05
+## purchaser_typeCommercial bank, savings bank, or savings association  1.481e-02
+## purchaser_typeCredit union, mortgage company, or finance company     1.470e-02
+## purchaser_typeFannie Mae                                             1.438e-02
+## purchaser_typeFarmer Mac                                             6.426e-01
+## purchaser_typeFreddie Mac                                            1.461e-02
+## purchaser_typeGinnie Mae                                             1.530e-02
+## purchaser_typeLife insurance company                                 3.048e-02
+## purchaser_typeNo purchaser                                           1.432e-02
+## purchaser_typeOther type of purchaser                                1.597e-02
+## purchaser_typePrivate securitizer                                    2.980e-02
+## ffiec_msa_md_median_fam_income                                       6.542e-06
+## business_or_commercial_purpose                                       2.035e-02
+## combined_loan_to_value_ratio                                         2.440e-04
+## conforming_loan_limitNC                                              1.381e-02
+## construction_methodSite-built                                        5.849e-02
+## discount_points                                                      1.454e-06
+## loan_amount                                                          3.938e-08
+## loan_typeFHA                                                         7.855e-03
+## loan_typeRHS/FSA                                                     6.379e-02
+## loan_typeVA                                                          1.138e-02
+## lien_statusSubordinate Lien                                          2.327e-02
+## occupancy_typePrincipal residence                                    1.372e-02
+## occupancy_typeSecond residence                                       2.400e-02
+## property_value                                                       2.703e-08
+## total_units                                                          2.061e-02
+##                                                                     t value
+## (Intercept)                                                          11.828
+## year                                                                 -1.483
+## census_tract                                                        -11.744
+## raceAmerican Indian or Alaska Native                                 -1.364
+## raceAsian                                                            -4.124
+## raceBlack or African American                                        -0.052
+## raceFree Form Text Only                                               1.500
+## raceJoint                                                            -1.390
+## raceNative Hawaiian or Other Pacific Islander                        -0.364
+## raceWhite                                                            -0.320
+## income                                                                1.307
+## debt_to_income_ratio                                                 17.859
+## tract_one_to_four_family_homes                                        2.843
+## tract_median_age_of_hu                                                2.862
+## tract_minority_pop_percent                                            6.153
+## tract_population                                                     -1.823
+## tract_to_msa_income_percentage                                       -8.785
+## purchaser_typeCommercial bank, savings bank, or savings association  -6.267
+## purchaser_typeCredit union, mortgage company, or finance company      0.295
+## purchaser_typeFannie Mae                                            -12.435
+## purchaser_typeFarmer Mac                                              0.272
+## purchaser_typeFreddie Mac                                           -11.722
+## purchaser_typeGinnie Mae                                            -11.912
+## purchaser_typeLife insurance company                                  2.253
+## purchaser_typeNo purchaser                                           -3.665
+## purchaser_typeOther type of purchaser                                 4.269
+## purchaser_typePrivate securitizer                                    16.356
+## ffiec_msa_md_median_fam_income                                      -49.972
+## business_or_commercial_purpose                                        3.741
+## combined_loan_to_value_ratio                                         31.869
+## conforming_loan_limitNC                                               0.636
+## construction_methodSite-built                                       -23.453
+## discount_points                                                     -26.274
+## loan_amount                                                         -15.726
+## loan_typeFHA                                                         -1.700
+## loan_typeRHS/FSA                                                     -2.455
+## loan_typeVA                                                         -23.782
+## lien_statusSubordinate Lien                                          51.524
+## occupancy_typePrincipal residence                                   -48.238
+## occupancy_typeSecond residence                                      -20.870
+## property_value                                                        6.509
+## total_units                                                           1.530
+##                                                                     Pr(&gt;|t|)
+## (Intercept)                                                          &lt; 2e-16
+## year                                                                0.138130
+## census_tract                                                         &lt; 2e-16
+## raceAmerican Indian or Alaska Native                                0.172575
+## raceAsian                                                           3.73e-05
+## raceBlack or African American                                       0.958891
+## raceFree Form Text Only                                             0.133545
+## raceJoint                                                           0.164616
+## raceNative Hawaiian or Other Pacific Islander                       0.716032
+## raceWhite                                                           0.748746
+## income                                                              0.191292
+## debt_to_income_ratio                                                 &lt; 2e-16
+## tract_one_to_four_family_homes                                      0.004468
+## tract_median_age_of_hu                                              0.004208
+## tract_minority_pop_percent                                          7.62e-10
+## tract_population                                                    0.068358
+## tract_to_msa_income_percentage                                       &lt; 2e-16
+## purchaser_typeCommercial bank, savings bank, or savings association 3.70e-10
+## purchaser_typeCredit union, mortgage company, or finance company    0.767721
+## purchaser_typeFannie Mae                                             &lt; 2e-16
+## purchaser_typeFarmer Mac                                            0.785907
+## purchaser_typeFreddie Mac                                            &lt; 2e-16
+## purchaser_typeGinnie Mae                                             &lt; 2e-16
+## purchaser_typeLife insurance company                                0.024258
+## purchaser_typeNo purchaser                                          0.000248
+## purchaser_typeOther type of purchaser                               1.97e-05
+## purchaser_typePrivate securitizer                                    &lt; 2e-16
+## ffiec_msa_md_median_fam_income                                       &lt; 2e-16
+## business_or_commercial_purpose                                      0.000183
+## combined_loan_to_value_ratio                                         &lt; 2e-16
+## conforming_loan_limitNC                                             0.524886
+## construction_methodSite-built                                        &lt; 2e-16
+## discount_points                                                      &lt; 2e-16
+## loan_amount                                                          &lt; 2e-16
+## loan_typeFHA                                                        0.089131
+## loan_typeRHS/FSA                                                    0.014097
+## loan_typeVA                                                          &lt; 2e-16
+## lien_statusSubordinate Lien                                          &lt; 2e-16
+## occupancy_typePrincipal residence                                    &lt; 2e-16
+## occupancy_typeSecond residence                                       &lt; 2e-16
+## property_value                                                      7.61e-11
+## total_units                                                         0.125975
+##                                                                        
+## (Intercept)                                                         ***
+## year                                                                   
+## census_tract                                                        ***
+## raceAmerican Indian or Alaska Native                                   
+## raceAsian                                                           ***
+## raceBlack or African American                                          
+## raceFree Form Text Only                                                
+## raceJoint                                                              
+## raceNative Hawaiian or Other Pacific Islander                          
+## raceWhite                                                              
+## income                                                                 
+## debt_to_income_ratio                                                ***
+## tract_one_to_four_family_homes                                      ** 
+## tract_median_age_of_hu                                              ** 
+## tract_minority_pop_percent                                          ***
+## tract_population                                                    .  
+## tract_to_msa_income_percentage                                      ***
+## purchaser_typeCommercial bank, savings bank, or savings association ***
+## purchaser_typeCredit union, mortgage company, or finance company       
+## purchaser_typeFannie Mae                                            ***
+## purchaser_typeFarmer Mac                                               
+## purchaser_typeFreddie Mac                                           ***
+## purchaser_typeGinnie Mae                                            ***
+## purchaser_typeLife insurance company                                *  
+## purchaser_typeNo purchaser                                          ***
+## purchaser_typeOther type of purchaser                               ***
+## purchaser_typePrivate securitizer                                   ***
+## ffiec_msa_md_median_fam_income                                      ***
+## business_or_commercial_purpose                                      ***
+## combined_loan_to_value_ratio                                        ***
+## conforming_loan_limitNC                                                
+## construction_methodSite-built                                       ***
+## discount_points                                                     ***
+## loan_amount                                                         ***
+## loan_typeFHA                                                        .  
+## loan_typeRHS/FSA                                                    *  
+## loan_typeVA                                                         ***
+## lien_statusSubordinate Lien                                         ***
+## occupancy_typePrincipal residence                                   ***
+## occupancy_typeSecond residence                                      ***
+## property_value                                                      ***
+## total_units                                                            
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 0.6411 on 90370 degrees of freedom
-## Multiple R-squared:  0.5484, Adjusted R-squared:  0.5482 
-## F-statistic:  2888 on 38 and 90370 DF,  p-value: &lt; 2.2e-16</code></pre>
+## Residual standard error: 0.6424 on 89877 degrees of freedom
+## Multiple R-squared:  0.5474, Adjusted R-squared:  0.5472 
+## F-statistic:  2651 on 41 and 89877 DF,  p-value: &lt; 2.2e-16</code></pre>
 <pre class="r"><code>summary(fit)$r.squared</code></pre>
-<pre><code>## [1] 0.5484337</code></pre>
+<pre><code>## [1] 0.5473567</code></pre>
+<pre class="r"><code>pred = predict(fit, val_x)
+# MSE on validation set
+mean((pred - val_y)**2)</code></pre>
+<pre><code>## [1] 0.4038798</code></pre>
+<p>R^2: 0.5526161 MSE training: 0.637*0.637 MSE validation: 0.4376424</p>
 
 
 
